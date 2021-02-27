@@ -9,9 +9,9 @@ public class Philosophers {
 	private static final int EATING = 2; 
 	
 	private static final long startTime = System.currentTimeMillis();
-	private static long programTime = 10000;
-	private static long timeToThink = 800;
-	private static long timeToEat = 1000;
+	private static long programTime = 10000;  // 10 segundos.
+	private static long timeToThink = 800; // 0.8 segundos
+	private static long timeToEat = 1000; // 1 segundo.
 	
 	private static int quantityOfPhilosophers = 5;
 	private static Philosopher[] philosophers;
@@ -21,6 +21,8 @@ public class Philosophers {
 	private static int[] stateOfThePhilosophers;
 	private static long[] timeThatThought;
 	private static long[] timeThatAte;
+	
+	private static boolean isItFixedTime = false;
 	
 	public static void main(String[] args) {
 		System.out.println();
@@ -78,7 +80,7 @@ public class Philosophers {
 	}
 	
 	// Left = Position 0, Right = Position 1.
-	private static void neighbors(int position, int[] neighbors) {
+	private static void setNeighbors(int position, int[] neighbors) {
 		// No es el primero, ni el último.
 		if ((position != 0) && (position != quantityOfPhilosophers-1)) {
 			neighbors[0] = position - 1;
@@ -96,7 +98,7 @@ public class Philosophers {
 	
 	private static void test(int position) {
 		int[] neighbors = new int[2];
-		neighbors(position, neighbors);
+		setNeighbors(position, neighbors);
 				
 		if ((stateOfThePhilosophers[position] == HUNGRY) && 
 			(stateOfThePhilosophers[neighbors[0]] != EATING) && 
@@ -133,6 +135,10 @@ public class Philosophers {
 		
 		private void think() {
 			try {
+				if (! isItFixedTime) {
+					timeToThink = ((int) (Math.random() * 5 + 1) * 1000); // Valores enteros entre 1000 y 5000, es decir entre 1 y 5 segundos.
+				}
+				
 				Philosopher.sleep(timeToThink);
 				
 				timeThatThought[this.position] += timeToThink; 
@@ -143,6 +149,10 @@ public class Philosophers {
 		
 		private void eat() {
 			try {
+				if (! isItFixedTime) {
+					timeToEat = ((int) (Math.random() * 5 + 1) * 1000); // Valores enteros entre 1000 y 5000, es decir entre 1 y 5 segundos.
+				}
+				
 				Philosopher.sleep(timeToEat);
 				
 				timeThatAte[this.position] += timeToEat; 
@@ -174,7 +184,7 @@ public class Philosophers {
 				stateOfThePhilosophers[position] = THINKING;
 				
 				int[] neighbors = new int[2];
-				neighbors(this.position, neighbors);
+				setNeighbors(this.position, neighbors);
 				test(neighbors[0]);
 				test(neighbors[1]);
 				
